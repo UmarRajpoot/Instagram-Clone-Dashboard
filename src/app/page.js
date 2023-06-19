@@ -150,53 +150,65 @@ export default function Home() {
           </Text>
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={{ base: 5, lg: 8 }}>
             {reportPost.map((reportedPost) => {
-              return (
-                <Post
-                  key={reportedPost.id}
-                  displayName={reportedPost.data?.auth.displayName}
-                  authPhotoURl={reportedPost.data?.auth.photoURL}
-                  IMAGE={reportedPost.data?.post.ImageURL}
-                  caption={reportedPost.data?.post.caption}
-                  location={reportedPost.data?.post.location}
-                  deletedBadge={reportedPost.data?.deleted}
-                  removePost={async () => {
-                    const docRef = doc(
-                      db,
-                      "/Users",
-                      `${reportedPost.data?.auth.id}`,
-                      "/Posts",
-                      `${reportedPost.data?.post.id}`
-                    );
-                    await updateDoc(docRef, { deleted: true }).then(() => {
-                      alert("Removed");
-                    });
-                    // Report update
-                    const reportRef = doc(db, "/Report", `${reportedPost.id}`);
-                    await updateDoc(reportRef, { deleted: true }).then(() => {
-                      getReportsData();
-                      alert("Removed");
-                    });
-                  }}
-                  restorePost={async () => {
-                    const docRef = doc(
-                      db,
-                      "/Users",
-                      `${reportedPost.data?.auth.id}`,
-                      "/Posts",
-                      `${reportedPost.data?.post.id}`
-                    );
-                    await updateDoc(docRef, { deleted: false }).then(() => {
-                      alert("Image Restored");
-                    });
-                    // Report update
-                    const reportRef = doc(db, "/Report", `${reportedPost.id}`);
-                    await updateDoc(reportRef, { deleted: false }).then(() => {
-                      getReportsData();
-                      alert("Image Restored");
-                    });
-                  }}
-                />
-              );
+              if (reportPost.length !== 0) {
+                return (
+                  <Post
+                    key={reportedPost.id}
+                    displayName={reportedPost.data.auth.displayName}
+                    authPhotoURl={reportedPost.data.auth.photoURL}
+                    IMAGE={reportedPost.data.post.ImageURL}
+                    caption={reportedPost.data.post.caption}
+                    location={reportedPost.data.post.location}
+                    deletedBadge={reportedPost.data.deleted}
+                    removePost={async () => {
+                      const docRef = doc(
+                        db,
+                        "/Users",
+                        `${reportedPost.data?.auth.id}`,
+                        "/Posts",
+                        `${reportedPost.data?.post.id}`
+                      );
+                      await updateDoc(docRef, { deleted: true }).then(() => {
+                        alert("Removed");
+                      });
+                      // Report update
+                      const reportRef = doc(
+                        db,
+                        "/Report",
+                        `${reportedPost.id}`
+                      );
+                      await updateDoc(reportRef, { deleted: true }).then(() => {
+                        getReportsData();
+                        alert("Removed");
+                      });
+                    }}
+                    restorePost={async () => {
+                      const docRef = doc(
+                        db,
+                        "/Users",
+                        `${reportedPost.data?.auth.id}`,
+                        "/Posts",
+                        `${reportedPost.data?.post.id}`
+                      );
+                      await updateDoc(docRef, { deleted: false }).then(() => {
+                        alert("Image Restored");
+                      });
+                      // Report update
+                      const reportRef = doc(
+                        db,
+                        "/Report",
+                        `${reportedPost.id}`
+                      );
+                      await updateDoc(reportRef, { deleted: false }).then(
+                        () => {
+                          getReportsData();
+                          alert("Image Restored");
+                        }
+                      );
+                    }}
+                  />
+                );
+              }
             })}
 
             <Post
