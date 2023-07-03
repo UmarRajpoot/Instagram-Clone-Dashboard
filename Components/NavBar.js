@@ -10,24 +10,25 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
+import { signOut } from "firebase/auth";
+import { auth } from "../Firebase/firebase";
+import { useRouter } from "next/navigation";
 
-const NavLink = ({ children }) => (
-  <Link
-    px={2}
-    py={1}
-    rounded={"md"}
-    _hover={{
-      textDecoration: "none",
-      bg: useColorModeValue("gray.200", "gray.700"),
-    }}
-    href={"#"}
-  >
-    {children}
-  </Link>
-);
-
-export default function Nav() {
+export default function Nav({ user }) {
   const { colorMode, toggleColorMode } = useColorMode();
+
+  const router = useRouter();
+
+  const SignOutUser = async () => {
+    await signOut(auth)
+      .then(() => {
+        console.log("User Sign Out");
+        router.replace("/auth");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   return (
     <>
       <Box bg={useColorModeValue("gray.200", "gray.800")} px={4}>
@@ -96,6 +97,17 @@ export default function Nav() {
             <Stack direction={"row"} spacing={7}>
               <Button onClick={toggleColorMode}>
                 {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
+              </Button>
+              <Button
+                onClick={() => {
+                  if (user) {
+                    SignOutUser();
+                  } else {
+                    router.replace("/auth");
+                  }
+                }}
+              >
+                {user ? "Sign Out" : "Login"}
               </Button>
             </Stack>
           </Flex>
